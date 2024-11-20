@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_svg_icons/flutter_svg_icons.dart';
 import 'package:hume_dating_app/screens/invite_friends.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NewPasswordScreen extends StatefulWidget {
   const NewPasswordScreen({super.key});
@@ -14,6 +15,20 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _password1Controller = TextEditingController();
   final _password2Controller = TextEditingController();
+
+  void isLogin() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    _password1Controller.text = sp.getString('p1') ?? '';
+    _password2Controller.text = sp.getString('p2') ?? '';
+    isChecked = sp.getBool('check') ?? false;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    isLogin();
+  }
 
   @override
   void dispose() {
@@ -217,10 +232,22 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                     backgroundColor: const Color(0xFF9610FF),
                     foregroundColor: Colors.white,
                   ),
-                  onPressed: () {
+                  onPressed: () async {
+                    if (isChecked && _formKey.currentState!.validate()) {
+                      SharedPreferences sp =
+                          await SharedPreferences.getInstance();
+                      sp.setString('p1', _password1Controller.text);
+                      sp.setString('p2', _password2Controller.text);
+                      sp.setBool('check', isChecked);
+                    }
+
+                    if (isChecked == false) {
+                      SharedPreferences sp =
+                          await SharedPreferences.getInstance();
+                      sp.clear();
+                    }
+
                     if (_formKey.currentState!.validate()) {
-                      _password1Controller.clear();
-                      _password2Controller.clear();
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (ctx) => const InviteFriendsScreen(),
