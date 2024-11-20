@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hume_dating_app/models/friend.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddFriends extends StatefulWidget {
   const AddFriends({super.key, required this.friend});
@@ -10,6 +11,26 @@ class AddFriends extends StatefulWidget {
 }
 
 class _AddFriendsState extends State<AddFriends> {
+  void _invitedFriends() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    widget.friend.isInvited = sp.getBool(widget.friend.id) ?? false;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _invitedFriends();
+  }
+
+  void _inviteFriend() async {
+    setState(() {
+      widget.friend.isInvited = true;
+    });
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    sp.setBool(widget.friend.id, widget.friend.isInvited);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -54,11 +75,7 @@ class _AddFriendsState extends State<AddFriends> {
                     backgroundColor: const Color(0xFF9610FF),
                     foregroundColor: Colors.white,
                   ),
-            onPressed: () {
-              setState(() {
-                widget.friend.isInvited = true;
-              });
-            },
+            onPressed: _inviteFriend,
             child: widget.friend.isInvited
                 ? const Text("Invited")
                 : const Text('Invite'),

@@ -29,9 +29,11 @@ class _InviteFriendsScreenState extends State<InviteFriendsScreen> {
         padding: const EdgeInsets.all(24),
         child: ListView.builder(
           itemCount: peopleList.length,
-          itemBuilder: (context, index) => AddFriends(
-            friend: peopleList[index],
-          ),
+          itemBuilder: (context, index) {
+            return AddFriends(
+              friend: peopleList[index],
+            );
+          },
         ),
       ),
     );
